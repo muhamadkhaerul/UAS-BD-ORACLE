@@ -1,5 +1,5 @@
 # UAS-BD-ORACLE
-.
+link youtube : https://youtu.be/eLoIw_8m7cg
 
 Pembuatan koneksi dari oracle ke bahasa pemrograman visual basic
 
