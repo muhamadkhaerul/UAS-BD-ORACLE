@@ -1,0 +1,112 @@
+Imports System.Data
+Imports System.Data.OleDb
+Public Class Formmobil
+    Public DS As DataSet
+    Public DA As OleDbDataAdapter
+    Public CONN As OleDbConnection
+    Public DR As OleDbDataReader
+    Public Sub koneksi()
+        Dim konek As String
+        konek = "provider=OraOLEDB.Oracle; Data Source=XE; user Id=UMAM_888; Password=888"
+        Try
+            CONN = New OleDbConnection(konek)
+            CONN.Open()
+            CONN.Close()
+            MsgBox("Koneksi Berhasil")
+        Catch ex As Exception
+            MessageBox.Show("Koneksi Gagal " & ex.Message)
+        End Try
+    End Sub
+    Public Sub tampil()
+        DA = New OleDbDataAdapter("select * from TBL_MOBIL", CONN)
+        DS = New DataSet
+        DA.Fill(DS, "TBL_MOBIL")
+        DataGridView1.DataSource = DS.Tables("TBL_MOBIL")
+    End Sub
+    Sub kosong()
+        txtnopol.Text = ""
+        txtkomob.Text = ""
+        txtmermob.Text = ""
+        txtjenmob.Text = ""
+    End Sub
+
+    Private Sub formmobil_load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Call koneksi()
+    End Sub
+
+    Private Sub btnmenut_Click(sender As Object, e As EventArgs) Handles btnmenut.Click
+        Formutama.Show()
+        Me.Hide()
+    End Sub
+
+    Private Sub btntampil_Click(sender As Object, e As EventArgs) Handles btntampil.Click
+        Call tampil()
+    End Sub
+
+    Private Sub btntambah_Click(sender As Object, e As EventArgs) Handles btntambah.Click
+        Dim CMD As New OleDbCommand
+        CMD.Connection = CONN
+        CONN.Open()
+        CMD.CommandType = CommandType.Text
+        CMD.CommandText = "insert into TBL_MOBIL (NOPOL, KODEMOBIL, MERK, JNSMOBIL) values ('" & txtnopol.Text & "','" & txtkomob.Text & "','" & txtmermob.Text &
+        "','" & txtjenmob.Text & "')"
+        CMD.ExecuteNonQuery()
+        CONN.Close()
+        MsgBox("Data Berhasil Disimpan")
+        kosong()
+    End Sub
+
+    Private Sub txtnopol_TextChanged(sender As Object, e As EventArgs) Handles txtnopol.TextChanged
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        CONN.Open()
+        Dim cmd1 As New OleDbCommand("select count(*) From TBL_MOBIL", CONN)
+        Dim count1 = Convert.ToString(cmd1.ExecuteScalar)
+        TextBox1.Text = count1
+        CONN.Close()
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+    End Sub
+
+    Private Sub btnhapus_Click(sender As Object, e As EventArgs) Handles btnhapus.Click
+        Dim CMDS As New OleDbCommand
+        CMDS.Connection = CONN
+        CONN.Open()
+        CMDS.CommandType = CommandType.Text
+        CMDS.CommandText = "delete from TBL_MOBIL where NOPOL='" & txtnopol.Text & "'"
+        CMDS.ExecuteNonQuery()
+        CONN.Close()
+        MsgBox("Data Berhasil Dihapus")
+        kosong()
+    End Sub
+
+    Private Sub DataGridView1_Click(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+        With DataGridView1
+            If .RowCount > 0 Then
+                Dim kategori1 As String = .Item(0, .CurrentRow.Index).Value
+                txtnopol.Text = .Item("NOPOL", .CurrentRow.Index).Value
+                txtkomob.Text = .Item("KODEMOBIL", .CurrentRow.Index).Value
+                txtmermob.Text = .Item("MERK", .CurrentRow.Index).Value
+                txtjenmob.Text = .Item("JNSMOBIL", .CurrentRow.Index).Value
+            End If
+        End With
+    End Sub
+
+    
+    Private Sub btnedit_Click(sender As Object, e As EventArgs) Handles btnedit.Click
+        Dim CMDE As New OleDbCommand
+        CMDE.Connection = CONN
+        CONN.Open()
+        CMDE.CommandType = CommandType.Text
+        CMDE.CommandText = "update TBL_MOBIL set NOPOL=" & txtnopol.Text &
+            ",KODEMOBIL='" & txtkomob.Text & ",MERK='" & txtmermob.Text & ",JNSMOBIL='" & txtjenmob.Text & ", where NOPOL=" & txtnopol.Text
+        CMDE.ExecuteNonQuery()
+        CONN.Close()
+        MsgBox("Data Berhasil Diubah")
+        kosong()
+    End Sub
+End Class
